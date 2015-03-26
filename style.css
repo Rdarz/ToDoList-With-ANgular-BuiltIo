@@ -1,7 +1,7 @@
 
 body{
 	margin: 1% auto;
-	background-color: #333;
+	color:#6e6e6e;
 	 
 }
 .site-wrapper {
@@ -31,13 +31,13 @@ h1{
 font-weight: 500;
 line-height: 1;
 font-size: 3em;
-color: #fff;
 }
 .form-horizontal{
 	padding: 3%;
-	min-height:700px;
+
+	min-height:600px;
 	background: #f4f4f4;
-	border:5px solid #e5e5e5;
+	border:3px solid #e5e5e5;
 	border-radius:5px;
 }
 
@@ -46,3 +46,10 @@ color: #fff;
 }
 .border{border: 1px solid;
 padding: 1%;}
+.login_form{overflow:hidden;margin: 0 auto;background-color: #f4f4f4;padding:1%;border:2px solid #E5E5E5;border-radius:5px;}
+.login_form_input{text-align: center;width:35%;float:left;margin:0.5% auto;}
+.login_form_submit{width:20%;margin:0.5% auto;font-size: 1.2em;}
+
+.signup_form{overflow:hidden;margin: 5% auto;background-color: #f4f4f4;padding:1%;border:2px solid #E5E5E5;border-radius:5px;}
+.signup_form_input{width:80%;margin:0.5% auto;}
+.signup_form_submit{width:80%;margin:0.5% auto;}

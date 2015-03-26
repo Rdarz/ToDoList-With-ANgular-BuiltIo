@@ -1,36 +1,43 @@
-var app = Built.App('blt2ef054f0bf794890');
 var todo = angular.module('myApp', []);
-var appClass=app.Class('topic_list');
+   var auth=signup.isAuthenticated();
+if(auth==false){
+	window.location="login.html";
+}
+var appClass = app.Class('topic_list');
+ var query = appClass.Query();
+ var todo_list = appClass.Object;
 todo.controller('userController', function($scope) {
 
     $scope.users = [];
     console.log("loading");
     todo.service("myService", MyService());
 
-    function MyService() {
-    	$scope.users = [];
+    function MyService(user) {
+        $scope.users = [];
         console.log("service loaded.");
-        var query = app.Class('topic_list').Query();
-
-        query
-            .toJSON()
-            .exec()
-            .then(function(objects) {
 
 
-                // for (var i = 0; i < objects.length; i++) {
-                //     alert("here");  
-                //     $scope.users.push(objects[i].topic);
-                //     console.log($scope.users);
-                //      // array of plain javascript objects
-                // } // array of plain javascript objects
+        signup.getSession()
+            .then(function(user) {
+                console.log('user', user.data)
+                query
+                    .where('app_user_object_uid', user.data.uid)
+                    .toJSON()
+                    .exec()
+                    .then(function(objects) {
+                        objects.map(function(obj) {
+                            $scope.users.push({
+                            	uid:obj.uid,
+                                topic: obj.topic,
+                                done: obj.done
+                            });
+                            $scope.$apply();
+                            //return something;
+                        });
+                    });
 
-                objects.map(function(obj) {
-                    $scope.users.push({topic:obj.topic,done:obj.done});
-                    $scope.$apply();
-                    //return something;
-                });
-            });
+
+            })
 
     }
 
@@ -39,31 +46,34 @@ todo.controller('userController', function($scope) {
     var curr_user;
 
 
-    $scope.add = function() {
+    $scope.add = function(user) {
         if ($scope.topic != null) {
             // $scope.users.push($scope.topic);
             var todo = $scope.topic;
 
-            var todo_list = appClass.Object;
-            todo_list({
-                    topic: todo,
-                    done:false
-                }).save()
-                .then(function() {
-                    alert("saved");
-                    var query = appClass.Query();
-                    query
-                        .toJSON()
-                        .exec()
-                        .then(function(objects) {
-                        		MyService();
+            signup.getSession()
+                .then(function(user) {
+                   
+                    todo_list({
+                        topic: todo,
+                        done: false
+                    }).save()
+                        .then(function() {
+                            alert("saved");
+                            var query = appClass.Query();
+                            query
+                                .toJSON()
+                                .exec()
+                                .then(function(objects) {
+                                    MyService();
+                                });
+
+
+                        }, function(err) {
+                            alert(err);
                         });
-
-
-                }, function(err) {
-                    alert(err);
-                });
-            $scope.topic = null;
+                    $scope.topic = null;
+                })
         }
     };
 
@@ -75,61 +85,46 @@ todo.controller('userController', function($scope) {
             }
         };
     };
-     $scope.checkbox = function(event,done) {
-     	alert(done);
-     	var query   = appClass.Object;
-if(done==true){
-var up=query({topic:event,done:true});
-up      = up.upsert({topic:event});
-up.save().then(function(person){
-console.log("checked");
-});
-}else{
-var up=query({topic:event,done:false});
-up      = up.upsert({topic:event});
-up.save().then(function(person){
-console.log("unchecked");
-});
-
-}
-     };
-
-    $scope.remove = function(user) {
-
-        var index = $scope.users.indexOf(user);
-
-        //this.unchecked = false;
-        var query = appClass.Query();
-        // query=query.where();
-        query
-            .toJSON()
-            .exec()
-            .then(function(objects) {
-
-
-                // for (var i = 0; i < objects.length; i++) {
-                //     alert("here");  
-                //     $scope.users.push(objects[i].topic);
-                //     console.log($scope.users);
-                //      // array of plain javascript objects
-                // } // array of plain javascript objects
-
-                objects.map(function(obj) {             
-                	if(user==obj.topic){
-		                   query= query.containedIn('uid',obj.uid);
-		                    query.delete()
-		                    .then(function(data){		              
-		                    	$scope.users.splice(index, 1);
-		                    	$scope.$apply();		                    	
-		                    })
-                    }
-                    //return something;
-                });
+    $scope.checkbox = function(users) {
+      
+         signup.getSession()
+                .then(function(user) {
+        var query = appClass.Object;
+       
+            var up = query({
+                uid: users.uid,
+                done:users.done
             });
-        // $scope.users.splice(index, 1);
-        // this.unchecked.push(index);
+            up = up.upsert({
+                uid: users.uid
+            });
+            up.save().then(function(person) {
+                console.log("checked");
+            });
+     
+})
     };
-    
+    $scope.remove = function(userx) {
+      
+                var index = $scope.users.indexOf(userx);
+                signup.getSession()
+                .then(function(user) {	
+                	todo_list({uid:userx.uid})    	
+                 .delete()
+                 .then(function(obj){
+
+                 	console.log(obj);
+                 	$scope.users.splice(index, 1); 
+                 	$scope.$apply();
+                 })
+
+                })
+                // $scope.users.splice(index, 1);        								         
+                                       
+                
+           
+          };
+
     $scope.edit = function(user) {
         this.value = false;
         curr_user = user;
@@ -146,77 +141,66 @@ console.log("unchecked");
 
                 this.value = true;
 
-                
 
 
 
-                  var query = appClass.Query();
-        // query=query.where();
-        query
-            .toJSON()
-            .exec()
-            .then(function(objects) {
+                var todo = user;
+                var query = appClass.Query();
+                // query=query.where();
+                signup.getSession()
+                    .then(function(user) {
+                        query
+                            .where('app_user_object_uid', user.data.uid)
+                            .toJSON()
+                            .exec()
+                            .then(function(objects) {
+                                var todo_list = appClass.Object;
+                                var updt = todo_list({
+                                    topic: todo
+                                });
+
+                                updt = updt.upsert({
+                                    topic: curr_user
+                                });
+                                updt.save()
+                                    .then(function() {
+                                        alert("saved");
+                                        // array of plain javascript objects
+                                        MyService();
+                                        $scope.$apply();
+                                    }, function(err) {
+                                        alert(err);
+                                    });
+
+                            })
 
 
-        //         // for (var i = 0; i < objects.length; i++) {
-        //         //     alert("here");  
-        //         //     $scope.users.push(objects[i].topic);
-        //         //     console.log($scope.users);
-        //         //      // array of plain javascript objects
-        //         // } // array of plain javascript objects
+                    });
 
-        //         objects.map(function(obj) {             
-        //         	if(user==obj.topic){
-		      //              query= query.containedIn('uid',obj.uid);
-		      //               query.setReference('topic',user)
-		      //               .save()
-		      //               .then(function(data){		              
-		      //               	$scope.users.splice(index, 1);
-        //         $scope.users.splice(index, 0, user);
-		      //               	$scope.$apply();		                    	
-		      //               })
-        //             }
-        //             //return something;
-        //         });
-        //     });
+            }
 
 
 
-					
 
 
-					   
-            // $scope.users.push($scope.topic);
-            var todo = user;
-
-            var todo_list = appClass.Object;
-
-    
-  
-
-            var updt=todo_list({ topic: todo
-                });
 
 
-             	          
-                	
-            updt=updt.upsert({topic:curr_user});
-            updt.save()
-                .then(function() {
-                    			alert("saved"); 
-	                            $scope.users.splice(index, 1);
-    				            $scope.users.splice(index, 0, user); // array of plain javascript objects
-                    	        $scope.$apply();
-                }, function(err) {
-                    			alert(err);
-                });
-          
-      						 
-      	
 
-});
-
-            							}
         }
     }
+
+
+    $scope.logout=function(){
+			//login
+		signup().logout()
+		.then(function (user) {
+			console.log('Logged Out');
+			$scope.$apply();
+			window.location.reload();
+			//signup.setSession(user)
+		}, console.error)
+
+			}
+
+	
 })

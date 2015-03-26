@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+	<script type="text/javascript" src="built.min.js"></script>
+	<script src="builtmodel.js" ></script>
+	<script type="text/javascript" src="user.js"></script>
+
+
+</head>
+<body class="site-wrapper"  >
+	<div class="site-wrapper-inner">
+		 <div class="container">
+				<div class="masthead clearfix">
+                <h1 class="masthead-brand">Login Form</h1>
+            	</div>
+            	<div class="form-horizontal">
+				  <div class="login_form" ng-controller="userLogin">
+				<form>
+						  <input type="text" class="form-control login_form_input" placeholder="Recipient's Username" ng-model="loginUser" required>
+						  <input type="password" class="form-control login_form_input" placeholder="Recipient's Password" ng-model="loginPass" required>
+						  <button type="submit" class="form-control login_form_submit" ng-click="login()">Login</button>						
+				 </form> 
+				  </div>
+				  
+				  <div class="signup_form" ng-controller="userSignup">
+				  <div class="masthead clearfix">
+                <h1 class="masthead-brand">New User? </h1>
+            	</div>
+            	<form>
+				  		 <input type="email" class="form-control signup_form_input" placeholder="UserName" ng-model="signupUsername" required>
+						  <input type="text" class="form-control signup_form_input" placeholder="Password" ng-model="signupPassword" required>
+						  <input type="text" class="form-control signup_form_input" placeholder="Confiirm Password" ng-model="signupConfirm" required>
+						  <button type="submit" class="form-control signup_form_submit" ng-click="signup()">SignUp</button>
+				</form>
+				  </div>
+				
+            	</div>
+		</div>
+	</div>
+	
+</body>
+</html>
