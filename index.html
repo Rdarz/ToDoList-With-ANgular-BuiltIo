@@ -17,8 +17,11 @@
 <body class="site-wrapper" ng-app="myApp" ng-controller="userController">
     <div class="site-wrapper-inner">
     
+        
         <div class="container">
+        <p ng-model="username">{{username}}</p>
         <button class="btn btn-default" type="button" ng-click="logout()">LogOut</button>
+
             <div class="masthead clearfix">
                 <h1 class="masthead-brand">ToDo List </h1>
             </div>

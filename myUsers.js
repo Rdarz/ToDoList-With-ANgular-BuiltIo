@@ -1,11 +1,9 @@
-var todo = angular.module('myApp', []);
-   var auth=signup.isAuthenticated();
-if(auth==false){
-	window.location="login.html";
-}
-var appClass = app.Class('topic_list');
- var query = appClass.Query();
- var todo_list = appClass.Object;
+//refer builtmodel.js
+if (auth == false) {
+	window.location = "login.html";
+					}
+
+
 todo.controller('userController', function($scope) {
 
     $scope.users = [];
@@ -17,9 +15,13 @@ todo.controller('userController', function($scope) {
         console.log("service loaded.");
 
 
+
         signup.getSession()
             .then(function(user) {
                 console.log('user', user.data)
+
+                $scope.username=user.data.email;
+                $scope.$apply();
                 query
                     .where('app_user_object_uid', user.data.uid)
                     .toJSON()
@@ -27,7 +29,7 @@ todo.controller('userController', function($scope) {
                     .then(function(objects) {
                         objects.map(function(obj) {
                             $scope.users.push({
-                            	uid:obj.uid,
+                                uid: obj.uid,
                                 topic: obj.topic,
                                 done: obj.done
                             });
@@ -53,7 +55,7 @@ todo.controller('userController', function($scope) {
 
             signup.getSession()
                 .then(function(user) {
-                   
+
                     todo_list({
                         topic: todo,
                         done: false
@@ -86,44 +88,46 @@ todo.controller('userController', function($scope) {
         };
     };
     $scope.checkbox = function(users) {
-      
-         signup.getSession()
-                .then(function(user) {
-        var query = appClass.Object;
-       
-            var up = query({
-                uid: users.uid,
-                done:users.done
-            });
-            up = up.upsert({
-                uid: users.uid
-            });
-            up.save().then(function(person) {
-                console.log("checked");
-            });
-     
-})
+
+        signup.getSession()
+            .then(function(user) {
+                var query = appClass.Object;
+
+                var up = query({
+                    uid: users.uid,
+                    done: users.done
+                });
+                up = up.upsert({
+                    uid: users.uid
+                });
+                up.save().then(function(person) {
+                    console.log("checked");
+                });
+
+            })
     };
     $scope.remove = function(userx) {
-      
-                var index = $scope.users.indexOf(userx);
-                signup.getSession()
-                .then(function(user) {	
-                	todo_list({uid:userx.uid})    	
-                 .delete()
-                 .then(function(obj){
 
-                 	console.log(obj);
-                 	$scope.users.splice(index, 1); 
-                 	$scope.$apply();
-                 })
-
+        var index = $scope.users.indexOf(userx);
+        signup.getSession()
+            .then(function(user) {
+                todo_list({
+                    uid: userx.uid
                 })
-                // $scope.users.splice(index, 1);        								         
-                                       
-                
-           
-          };
+                    .delete()
+                    .then(function(obj) {
+
+                        console.log(obj);
+                        $scope.users.splice(index, 1);
+                        $scope.$apply();
+                    })
+
+            })
+        // $scope.users.splice(index, 1);        								         
+
+
+
+    };
 
     $scope.edit = function(user) {
         this.value = false;
@@ -190,17 +194,18 @@ todo.controller('userController', function($scope) {
     }
 
 
-    $scope.logout=function(){
-			//login
-		signup().logout()
-		.then(function (user) {
-			console.log('Logged Out');
-			$scope.$apply();
-			window.location.reload();
-			//signup.setSession(user)
-		}, console.error)
+    $scope.logout = function() {
+        //login
+        signup().logout()
+            .then(function(user) {
+                console.log('Logged Out');
+                $scope.$apply();
+                window.location.reload();
+                //signup.setSession(user)
+            }, console.error)
 
-			}
+    }
 
-	
-})
+
+});
+			
